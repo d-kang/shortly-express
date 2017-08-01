@@ -9,7 +9,7 @@ var Link = db.Model.extend({
     visits: 0
   },
   clicks: function() {
-    return this.hasMany(Click);
+    return this.hasMany(Click); //The hasMany relation specifies that this model has one or more rows in another table which match on this model's primary key.
   },
   initialize: function() {
     this.on('creating', function(model, attrs, options) {

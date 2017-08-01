@@ -12,8 +12,10 @@ var Link = require('./app/models/link');
 var Click = require('./app/models/click');
 
 var app = express();
-
+// @ sets path to views
 app.set('views', __dirname + '/views');
+// @ we set the engine to ejs
+// now renders ejs
 app.set('view engine', 'ejs');
 app.use(partials());
 // Parse JSON (uniform resource locators)
@@ -23,33 +25,79 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 
-app.get('/', 
-function(req, res) {
-  res.render('index');
-});
-
-app.get('/create', 
-function(req, res) {
-  res.render('index');
-});
-
-app.get('/links', 
-function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.status(200).send(links.models);
+app.get('/',
+  function(req, res) {
+    res.render('index');
   });
+
+app.get('/create',
+  function(req, res) {
+    res.render('index');
+  });
+
+app.get('/links',
+  function(req, res) {
+    Links.reset().fetch().then(function(links) {
+      res.status(200).send(links.models);
+    });
+  });
+
+app.post('/links',
+  function(req, res) {
+    var uri = req.body.url;
+    console.log(util.isValidUrl(uri));
+    if (!util.isValidUrl(uri)) {
+      // console.log('Not a valid url: ', uri);
+      return res.sendStatus(404);
+    }
+    console.log('i ran');
+    new Link({ url: uri }).fetch().then(function(found) {
+      console.log({found});
+
+
+
+      if (found) {
+        res.status(200).send(found.attributes);
+      } else {
+        util.getUrlTitle(uri, function(err, title) {
+          if (err) {
+            console.log('Error reading URL heading: ', err);
+            return res.sendStatus(404);
+          }
+          Links.create({
+            url: uri,
+            title: title,
+            baseUrl: req.headers.origin
+          })
+            .then(function(newLink) {
+              res.status(200).send(newLink);
+            });
+        });
+      }
+    });
+  });
+
+/************************************************************/
+// Write your authentication routes here
+/************************************************************/
+app.get('/login', function(req, res) {
+  res.render('login');
 });
 
-app.post('/links', 
-function(req, res) {
-  var uri = req.body.url;
+app.get('/signup', function(req, res) {
+  res.render('signup');
+});
 
-  if (!util.isValidUrl(uri)) {
-    console.log('Not a valid url: ', uri);
-    return res.sendStatus(404);
-  }
+app.post('/signup', function(req, res) {
+  console.log({req});
+  console.log('=========================');
+  console.log('req.message', req.message);
+  // req.
+  var username = req.username;
+  var password = req.password;
 
-  new Link({ url: uri }).fetch().then(function(found) {
+  /*
+  new Users({ url: uri }).fetch().then(function(found) {
     if (found) {
       res.status(200).send(found.attributes);
     } else {
@@ -59,23 +107,31 @@ function(req, res) {
           return res.sendStatus(404);
         }
 
-        Links.create({
+        Users.create({
           url: uri,
           title: title,
           baseUrl: req.headers.origin
         })
-        .then(function(newLink) {
-          res.status(200).send(newLink);
-        });
+          .then(function(newLink) {
+            res.status(200).send(newLink);
+          });
       });
     }
   });
+  */
+
 });
 
-/************************************************************/
-// Write your authentication routes here
-/************************************************************/
 
+app.post('/login', function(req, res) {
+  console.log({req});
+  console.log('=========================');
+  console.log('req.message', req.message);
+  // req.
+  var username = req.username;
+  var password = req.password;
+
+});
 
 
 /************************************************************/
