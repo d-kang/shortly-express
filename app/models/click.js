@@ -5,7 +5,7 @@ var Click = db.Model.extend({ //bookshelf knex
   tableName: 'clicks', //database table 'clicks'
   hasTimestamps: true, //has timestamps
   link: function() {
-    return this.belongsTo(Link, 'linkId'); //bookshelf function - belongs to link model
+    return this.belongsTo(Link, 'linkId'); //"this click model belongs to the link"
   }
 });
 

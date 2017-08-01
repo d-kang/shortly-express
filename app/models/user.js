@@ -7,9 +7,8 @@ var User = db.Model.extend({
   hasTimestamps: true,
   intialize: function() {
     this.on('creating', function(model, attrs, options) {
-      console.log('model:', model);
-      console.log('attrs:', attrs);
-      console.log('options:', options);
+      // get() = et the current value of an attribute from the model
+      // on creating this model, invoke the function
     });
   }
 });

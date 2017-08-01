@@ -3,7 +3,6 @@ var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
 
-
 var db = require('./app/config');
 var Users = require('./app/collections/users');
 var User = require('./app/models/user');
@@ -45,17 +44,14 @@ app.get('/links',
 app.post('/links',
   function(req, res) {
     var uri = req.body.url;
-    console.log(util.isValidUrl(uri));
+    // console.log(util.isValidUrl(uri));
     if (!util.isValidUrl(uri)) {
       // console.log('Not a valid url: ', uri);
       return res.sendStatus(404);
     }
-    console.log('i ran');
+    // console.log('i ran');
     new Link({ url: uri }).fetch().then(function(found) {
-      console.log({found});
-
-
-
+      // console.log({found});
       if (found) {
         res.status(200).send(found.attributes);
       } else {
@@ -96,29 +92,9 @@ app.post('/signup', function(req, res) {
   var username = req.username;
   var password = req.password;
 
-  /*
-  new Users({ url: uri }).fetch().then(function(found) {
-    if (found) {
-      res.status(200).send(found.attributes);
-    } else {
-      util.getUrlTitle(uri, function(err, title) {
-        if (err) {
-          console.log('Error reading URL heading: ', err);
-          return res.sendStatus(404);
-        }
-
-        Users.create({
-          url: uri,
-          title: title,
-          baseUrl: req.headers.origin
-        })
-          .then(function(newLink) {
-            res.status(200).send(newLink);
-          });
-      });
-    }
-  });
-  */
+  //on creating a new user, pass in an attribute object {username: username, password: password} => fetches the model from the database => then => invoke callback function passing in 'found' value
+  //if found, handle error
+  //otherwise, (create is a collection method) create a new model passing in the given attribute object then pass in 201 status code and redirect user back to '/'
 
 });
 
@@ -130,6 +106,10 @@ app.post('/login', function(req, res) {
   // req.
   var username = req.username;
   var password = req.password;
+
+  //create a user and pass in attribute object => fetch the model from database => then => invoke callback function passing in 'found' value
+  //if found, (when user successfully logs in), what do we do? redirect them to where?
+  //if error, redirect back to login page
 
 });
 
